@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <algorithm>
 
 std::string readFile(std::string fileName){
 	std::ifstream boardPositionFile(fileName);
@@ -15,6 +16,7 @@ std::string readFile(std::string fileName){
 }
 
 void printBoard(std::string board) {
+	std::replace(board.begin(), board.end(), 'x', '.');
 	std::cout << std::endl;
 	std::cout << board[18] << " " << "-" << " " << "-" << " " << board[19] << " " << "-" << " " << "-" << " " << board[20] << std::endl;
 	std::cout << "|" << " " << board[15] << " " << "-" << " " << board[16] << " " << "-" << " " << board[17] << " " << "|" << std::endl;
