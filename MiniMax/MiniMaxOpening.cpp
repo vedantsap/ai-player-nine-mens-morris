@@ -5,13 +5,21 @@
 #include <vector>
 #include <unordered_map>
 #include <map>
+#include <random>
 using namespace std;
 
 // Define constants to be used across the program
 const char EMPTY_POSITION = 'x';
 const char WHITE_PIECE = 'W';
 const char BLACK_PIECE = 'B';
-const int BOARD_SIZE = '21';
+const int BOARD_SIZE = 21;
+const string EMPTY_BOARD = "xxxxxxxxxxxxxxxxxxxxx";
+
+const int STATIC_ESTIMATE_MINIMUM = -10000;
+const int STATIC_ESTIMATE_MAXIMUM = 10000;
+const int STATIC_ESTIMATE_MIDGAME_ENDGAME_MULTIPLIER = 1000;
+
+
 
 // Mapping to store neighbors of positions as an adjacency list
 const unordered_map<int, vector<int>> neighbors = {
@@ -37,7 +45,11 @@ const unordered_map<int, vector<int>> neighbors = {
 	{19, {16, 18, 20}},
 	{20, {1, 19}}};
 
-// Mapping to store value of mills possible at each board position
+/**
+ * Mapping to store value of mills possible at each board position
+ * key: position on board
+ * value: mills that can be made with this position
+ */
 const unordered_map<int, vector<vector<int>>> mills = {
 	{0, {{0, 6, 18}}},
 	{1, {{1, 11, 20}}},
@@ -67,6 +79,7 @@ const unordered_map<int, vector<vector<int>>> mills = {
 
 string readFile(string fileName);
 void printBoard(string board);
+void printDelta(const string &oldBoard, const string &newBoard);
 
 // 2. abstracted position generators
 
@@ -80,10 +93,16 @@ vector<string> generateMove(const string &board);
 vector<string> generateHopping(const string &board);
 void generateRemove(const string &board, vector<string> &positions);
 
-// 4. utils and adapters for position generators
+// 6. Static estimation functions
+
+int staticEstimationOpening(const string &board);
+int staticEstimationMidgameEndgame(const string &board);
+
+// 5. utils and adapters for position generators
 
 bool closeMill(int position, const string &board);
-int countPieces(const string &board);
+int countPieces(const string &board, const char &piece);
+string invertBoard(string board);
 
 string readFile(string fileName)
 {
@@ -105,7 +124,6 @@ string readFile(string fileName)
 void printBoard(string board)
 {
 	replace(board.begin(), board.end(), EMPTY_POSITION, '.');
-	cout << endl;
 	cout << board[18]
 		 << " - - "
 		 << board[19]
@@ -152,12 +170,37 @@ void printBoard(string board)
 	return;
 }
 
+void printDelta(const string &oldBoard, const string &newBoard)
+{
+	for (int i = 0; i < BOARD_SIZE; i++)
+	{
+		if (oldBoard[i] != newBoard[i] && oldBoard[i] == EMPTY_POSITION)
+		{
+			if (newBoard[i] == WHITE_PIECE)
+				cout << "WHITE added to " << i << endl;
+			if (newBoard[i] == BLACK_PIECE)
+				cout << "BLACK added to " << i << endl;
+		}
+	}
+	for (int i = 0; i < BOARD_SIZE; i++)
+	{
+		if (oldBoard[i] != newBoard[i] && newBoard[i] == EMPTY_POSITION)
+		{
+			if (oldBoard[i] == WHITE_PIECE)
+				cout << "WHITE removed from " << i << endl;
+			if (oldBoard[i] == BLACK_PIECE)
+				cout << "BLACK removed from " << i << endl;
+		}
+	}
+	cout << endl;
+}
+
 // TODO Black Move generator adapter
 
 /**
  * Generates moves during the opening phase of game
  * Adds pieces to the board
- * @param board - starting board on which a white piece needs to make a move
+ * @param board: starting board on which a white piece needs to make a move
  * @return a list of valid board positions after adding
  *
  */
@@ -169,12 +212,12 @@ vector<string> generateMovesOpening(const string &board)
 /**
  * Generates moves during the midgame and endgame phase of game
  * Moves and hops pieces around on the board
- * @param board - starting board on which a white piece needs to make a move
+ * @param board: starting board on which a white piece needs to make a move
  * @return a list of valid board positions after moving or hopping
  */
 vector<string> generateMovesMidgameEndgame(const string &board)
 {
-	if (countPieces(board) == 3)
+	if (countPieces(board, WHITE_PIECE) == 3)
 	{
 		return generateHopping(board);
 	}
@@ -270,8 +313,8 @@ vector<string> generateHopping(const string &board)
 
 /**
  * Removes one BLACK piece from the board, called when a WHITE mill is created
- * @param board - board position
- * @param moves - list of moves being generated from the method above
+ * @param board: board position
+ * @param moves: list of moves being generated from the method above
  */
 void generateRemove(const string &board, vector<string> &moves)
 {
@@ -288,11 +331,36 @@ void generateRemove(const string &board, vector<string> &moves)
 			}
 		}
 	}
-	// If no black pieces were removed (all were within mills) add board back
+	// If no black pieces could removed (all were within mills) and continue with the same board
 	if (!blackPiecesRemoved)
 	{
 		moves.push_back(board);
 	}
+}
+
+int staticEstimationOpening(const string &board)
+{
+	return countPieces(board, WHITE_PIECE) - countPieces(board, BLACK_PIECE);
+}
+
+int staticEstimationMidgameEndgame(const string &board)
+{
+	int numBlackPieces = countPieces(board, BLACK_PIECE);
+	if(numBlackPieces <= 2)
+	{
+		return STATIC_ESTIMATE_MAXIMUM;
+	}
+	int numWhitePieces = countPieces(board, WHITE_PIECE);
+	if(numWhitePieces <= 2)
+	{
+		return STATIC_ESTIMATE_MINIMUM;
+	}
+	vector<string> blackMoves = generateMovesMidgameEndgame(invertBoard(board));
+	if(blackMoves.size()==0)
+	{
+		return STATIC_ESTIMATE_MAXIMUM;
+	}
+	return STATIC_ESTIMATE_MIDGAME_ENDGAME_MULTIPLIER * (numWhitePieces - numBlackPieces) - blackMoves.size(); 
 }
 
 /**
@@ -306,20 +374,58 @@ bool closeMill(int position, const string &board)
 	for (vector<int> mill : possibleMills)
 	{
 		if (board[mill[0]] == piece && board[mill[1]] == piece && board[mill[2]] == piece)
+		{
 			return true;
+		}
 	}
 	return false;
 }
 
-int countPieces(const string &board)
+int countPieces(const string &board, const char &piece)
 {
 	int count = 0;
-	for (const char &piece : board)
+	for (const char &position : board)
 	{
-		if (piece == WHITE_PIECE)
+		if (position == piece)
 			count++;
 	}
 	return count;
+}
+
+string invertBoard(string board)
+{
+	for (int i = 0; i < BOARD_SIZE; i++)
+	{
+		if (board[i] == WHITE_PIECE)
+			board[i] = BLACK_PIECE;
+		else if (board[i] == BLACK_PIECE)
+			board[i] = WHITE_PIECE;
+	}
+	return board;
+}
+
+void playAiVsAi(string startPosition)
+{
+	cout << "Starting game AI vs AI. WHITE to play first!" << endl;
+	int round = 0;
+	for (int i = 0; i < 8; i++)
+	{
+		vector<string> whiteMoves = generateAdd(startPosition);
+		string newPosition = whiteMoves[rand() % whiteMoves.size()];
+		cout << "**************************************************Round: " << 2 * i + 1 << endl;
+		cout << "WHITE played:" << endl;
+		printDelta(startPosition, newPosition);
+		printBoard(newPosition);
+
+		string invertedBoard = invertBoard(newPosition);
+		vector<string> blackMovesInverted = generateAdd(invertedBoard);
+		string startPositionInverted = blackMovesInverted[rand() % blackMovesInverted.size()];
+		startPosition = invertBoard(startPositionInverted);
+		cout << "**************************************************Round: " << 2 * i + 2 << endl;
+		cout << "BLACK played:" << endl;
+		printDelta(newPosition, startPosition);
+		printBoard(startPosition);
+	}
 }
 
 int main(int argc, char *argv[])
@@ -332,4 +438,5 @@ int main(int argc, char *argv[])
 	string currentPosition = readFile(argv[1]);
 	cout << "Board as string: " << currentPosition << endl;
 	printBoard(currentPosition);
+	playAiVsAi(EMPTY_BOARD);
 }
