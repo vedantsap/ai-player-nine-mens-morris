@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <map>
 #include <random>
+#include <limits.h>
 using namespace std;
 
 // Define constants to be used across the program
@@ -19,7 +20,16 @@ const int STATIC_ESTIMATE_MINIMUM = -10000;
 const int STATIC_ESTIMATE_MAXIMUM = 10000;
 const int STATIC_ESTIMATE_MIDGAME_ENDGAME_MULTIPLIER = 1000;
 
+unordered_map<string, int> STATIC_ESTIMATE_CACHE;
 
+struct GameNode
+{
+	string board;
+	int staticEstimate;
+	int positionsEvaluated = 0;
+	GameNode *next;
+	// is leaf?
+};
 
 // Mapping to store neighbors of positions as an adjacency list
 const unordered_map<int, vector<int>> neighbors = {
@@ -93,7 +103,7 @@ vector<string> generateMove(const string &board);
 vector<string> generateHopping(const string &board);
 void generateRemove(const string &board, vector<string> &positions);
 
-// 6. Static estimation functions
+// 4. Static estimation functions
 
 int staticEstimationOpening(const string &board);
 int staticEstimationMidgameEndgame(const string &board);
@@ -103,6 +113,14 @@ int staticEstimationMidgameEndgame(const string &board);
 bool closeMill(int position, const string &board);
 int countPieces(const string &board, const char &piece);
 string invertBoard(string board);
+
+// 6. MiniMax algorithm functions, TO BE PLACED IN SEPARATE FILE
+
+string MiniMaxOpening(const string &board, int depth);
+GameNode MaxMin(const string &board, int depth);
+GameNode MinMax(const string &board, int depth);
+
+// 7. Struct for a Node in the game tree
 
 string readFile(string fileName)
 {
@@ -340,27 +358,33 @@ void generateRemove(const string &board, vector<string> &moves)
 
 int staticEstimationOpening(const string &board)
 {
+	// TODO: enable memoization
+	// if(STATIC_ESTIMATE_CACHE[board]==0)
+	// {
+	// 	STATIC_ESTIMATE_CACHE[board] = countPieces(board, WHITE_PIECE) - countPieces(board, BLACK_PIECE);
+	// }
+	// return STATIC_ESTIMATE_CACHE[board];
 	return countPieces(board, WHITE_PIECE) - countPieces(board, BLACK_PIECE);
 }
 
 int staticEstimationMidgameEndgame(const string &board)
 {
 	int numBlackPieces = countPieces(board, BLACK_PIECE);
-	if(numBlackPieces <= 2)
+	if (numBlackPieces <= 2)
 	{
 		return STATIC_ESTIMATE_MAXIMUM;
 	}
 	int numWhitePieces = countPieces(board, WHITE_PIECE);
-	if(numWhitePieces <= 2)
+	if (numWhitePieces <= 2)
 	{
 		return STATIC_ESTIMATE_MINIMUM;
 	}
 	vector<string> blackMoves = generateMovesMidgameEndgame(invertBoard(board));
-	if(blackMoves.size()==0)
+	if (blackMoves.size() == 0)
 	{
 		return STATIC_ESTIMATE_MAXIMUM;
 	}
-	return STATIC_ESTIMATE_MIDGAME_ENDGAME_MULTIPLIER * (numWhitePieces - numBlackPieces) - blackMoves.size(); 
+	return STATIC_ESTIMATE_MIDGAME_ENDGAME_MULTIPLIER * (numWhitePieces - numBlackPieces) - blackMoves.size();
 }
 
 /**
@@ -383,13 +407,7 @@ bool closeMill(int position, const string &board)
 
 int countPieces(const string &board, const char &piece)
 {
-	int count = 0;
-	for (const char &position : board)
-	{
-		if (position == piece)
-			count++;
-	}
-	return count;
+	return count(board.begin(), board.end(), piece);
 }
 
 string invertBoard(string board)
@@ -404,23 +422,93 @@ string invertBoard(string board)
 	return board;
 }
 
+string MiniMaxOpening(const string &board, int depth)
+{
+	GameNode move = MaxMin(board, depth);
+
+	cout << "Board Position: " << move.board << endl;
+	cout << "Positions evaluated by static estimation: " << move.positionsEvaluated << endl;
+	cout << "MINIMAX estimate: " << move.staticEstimate << endl;
+
+	return move.board;
+}
+
+GameNode MaxMin(const string &board, int depth)
+{
+	GameNode game;
+	if (depth == 0) // || is a leaf node?
+	{
+		game.staticEstimate = staticEstimationOpening(board);
+		game.board = board;
+		game.positionsEvaluated++; // REQUIRED ???
+		return game; // what is this doing ???
+	}
+	int value = INT_MIN;
+	int eval = 0;
+	for (const string &move : generateMovesOpening(board))
+	{
+		eval++;
+		GameNode minMax = MinMax(move, depth - 1);
+		game.positionsEvaluated += minMax.positionsEvaluated;
+		if (value < minMax.staticEstimate)
+		{
+			game.staticEstimate = value;
+			game.board = move; // WHAT?
+			game.next = &minMax;
+		}
+	}
+	game.positionsEvaluated+=eval;
+	return game;
+}
+
+GameNode MinMax(const string &board, int depth)
+{
+	GameNode game;
+	if (depth == 0) // || is a leaf node?
+	{
+		game.staticEstimate = staticEstimationOpening(board);
+		game.board = board;
+		game.positionsEvaluated++; // REQUIRED ???
+		return game; // what is this doing ???
+	}
+	int value = INT_MAX;
+	int eval = 0;
+	for (const string &move : generateMovesOpening(invertBoard(board)))
+	{
+		eval++;
+		GameNode maxMin = MaxMin(invertBoard(move), depth - 1);
+		game.positionsEvaluated += maxMin.positionsEvaluated;
+		if (value > maxMin.staticEstimate)
+		{
+			game.staticEstimate = value;
+			game.board = move; // WHAT?
+			game.next = &maxMin;
+		}
+	}
+	game.positionsEvaluated+=eval;
+	return game;
+}
+
 void playAiVsAi(string startPosition)
 {
 	cout << "Starting game AI vs AI. WHITE to play first!" << endl;
 	int round = 0;
 	for (int i = 0; i < 8; i++)
 	{
-		vector<string> whiteMoves = generateAdd(startPosition);
-		string newPosition = whiteMoves[rand() % whiteMoves.size()];
+		// FOR RANDOM GAME
+		// vector<string> whiteMoves = generateAdd(startPosition);
+		// string newPosition = whiteMoves[rand() % whiteMoves.size()];
+		string newPosition = MiniMaxOpening(startPosition, 2);
 		cout << "**************************************************Round: " << 2 * i + 1 << endl;
 		cout << "WHITE played:" << endl;
 		printDelta(startPosition, newPosition);
 		printBoard(newPosition);
 
-		string invertedBoard = invertBoard(newPosition);
-		vector<string> blackMovesInverted = generateAdd(invertedBoard);
-		string startPositionInverted = blackMovesInverted[rand() % blackMovesInverted.size()];
-		startPosition = invertBoard(startPositionInverted);
+		// FOR RANDOM GAME
+		// string invertedBoard = invertBoard(newPosition);
+		// vector<string> blackMovesInverted = generateAdd(invertedBoard);
+		// string startPositionInverted = blackMovesInverted[rand() % blackMovesInverted.size()];
+		startPosition = invertBoard(MiniMaxOpening(invertBoard(newPosition), 2));
 		cout << "**************************************************Round: " << 2 * i + 2 << endl;
 		cout << "BLACK played:" << endl;
 		printDelta(newPosition, startPosition);
@@ -430,13 +518,13 @@ void playAiVsAi(string startPosition)
 
 int main(int argc, char *argv[])
 {
-	if (argc != 2)
-	{
-		cout << "there should be only 1 parameter" << endl;
-		return -1;
-	}
-	string currentPosition = readFile(argv[1]);
-	cout << "Board as string: " << currentPosition << endl;
-	printBoard(currentPosition);
+	// if (argc != 2)
+	// {
+	// 	cout << "there should be only 1 parameter" << endl;
+	// 	return -1;
+	// }
+	// string currentPosition = readFile(argv[1]);
+	// cout << "Board as string: " << currentPosition << endl;
+	// printBoard(currentPosition);
 	playAiVsAi(EMPTY_BOARD);
 }
