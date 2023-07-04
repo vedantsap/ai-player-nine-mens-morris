@@ -340,14 +340,12 @@ void generateRemove(const string &board, vector<string> &moves)
 	bool blackPiecesRemoved = false;
 	for (int i = 0; i < BOARD_SIZE; i++)
 	{
-		if (board[i] == BLACK_PIECE)
+		if (board[i] == BLACK_PIECE && !closeMill(i, board))
 		{
-			if (!closeMill(i, board))
-			{
-				string generatedBoard = board;
-				generatedBoard[i] = EMPTY_POSITION;
-				moves.push_back(generatedBoard);
-			}
+			blackPiecesRemoved = true;
+			string generatedBoard = board;
+			generatedBoard[i] = EMPTY_POSITION;
+			moves.push_back(generatedBoard);
 		}
 	}
 	// If no black pieces could removed (all were within mills) and continue with the same board
@@ -444,11 +442,12 @@ GameNode MaxMin(GameNode move, int depth)
 		move.positionsEvaluated++;
 		return move;
 	}
-	GameNode game;
+	GameNode nextMoveBestNode;
 	int value = INT_MIN;
 	int eval = 0;
 	GameNode nextMoveCandidateNode;
-	for (const string &nextMove : generateMovesOpening(move.board))
+	vector<string> allmoves = generateMovesOpening(move.board);
+	for (const string &nextMove : allmoves)
 	{
 		eval++;
 		nextMoveCandidateNode.board = nextMove;
@@ -457,13 +456,13 @@ GameNode MaxMin(GameNode move, int depth)
 		if (value < minMax.staticEstimate)
 		{
 			value = minMax.staticEstimate;
-			game.board = nextMoveCandidateNode.board;
-			game.staticEstimate = value;
-			game.next = &minMax;
+			nextMoveBestNode.board = nextMoveCandidateNode.board;
+			nextMoveBestNode.staticEstimate = value;
+			// nextMoveBestNode.next = &nextMoveCandidateNode;
 		}
 	}
-	game.positionsEvaluated += eval;
-	return game;
+	nextMoveBestNode.positionsEvaluated += eval;
+	return nextMoveBestNode;
 }
 
 GameNode MinMax(GameNode move, int depth)
@@ -474,11 +473,12 @@ GameNode MinMax(GameNode move, int depth)
 		move.positionsEvaluated++;
 		return move;
 	}
-	GameNode game;
+	GameNode nextMoveBestNode;
 	int value = INT_MAX;
 	int eval = 0;
 	GameNode nextMoveCandidateNode;
-	for (const string &nextMove : generateMovesOpening(invertBoard(move.board)))
+	vector<string> allmoves = generateMovesOpening(invertBoard(move.board));
+	for (const string &nextMove : allmoves)
 	{
 		eval++;
 		nextMoveCandidateNode.board = invertBoard(nextMove);
@@ -487,13 +487,13 @@ GameNode MinMax(GameNode move, int depth)
 		if (value > maxMin.staticEstimate)
 		{
 			value = maxMin.staticEstimate;
-			game.board = nextMoveCandidateNode.board;
-			game.staticEstimate = value;
-			game.next = &maxMin;
+			nextMoveBestNode.board = nextMoveCandidateNode.board;
+			nextMoveBestNode.staticEstimate = value;
+			// nextMoveBestNode.next = &nextMoveCandidateNode;
 		}
 	}
-	game.positionsEvaluated += eval;
-	return game;
+	nextMoveBestNode.positionsEvaluated += eval;
+	return nextMoveBestNode;
 }
 
 void playAiVsAi(string startPosition)
@@ -505,7 +505,7 @@ void playAiVsAi(string startPosition)
 		// FOR RANDOM GAME
 		// vector<string> whiteMoves = generateAdd(startPosition);
 		// string newPosition = whiteMoves[rand() % whiteMoves.size()];
-		string newPosition = MiniMaxOpening(startPosition, 3); // more than 5 takes too long
+		string newPosition = MiniMaxOpening(startPosition, 2); // more than 5 takes too long
 		cout << endl;
 		cout << "**************************************************Round: " << 2 * i + 1 << endl;
 		cout << "WHITE played:" << endl;
@@ -535,5 +535,12 @@ int main(int argc, char *argv[])
 	// string currentPosition = readFile(argv[1]);
 	// cout << "Board as string: " << currentPosition << endl;
 	// printBoard(currentPosition);
+
 	playAiVsAi(EMPTY_BOARD);
+
+	// both can get a mill out of this, will white make a mill or block black or do something else
+	// string currentBoard = "WxxBxxxxxxBxxxxxxxWx";
+	// printBoard(currentBoard);
+	// string nextMove = MiniMaxOpening(currentBoard, 2);
+	// printBoard(nextMove);
 }
