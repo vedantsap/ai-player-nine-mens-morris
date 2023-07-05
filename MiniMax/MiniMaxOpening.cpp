@@ -108,11 +108,15 @@ void generateRemove(const string &board, vector<string> &positions);
 int staticEstimationOpening(const string &board);
 int staticEstimationMidgameEndgame(const string &board);
 
+// int staticEstimationOpeningImproved(const string &board);
+// int staticEstimationMidgameEndgameImproved(const string &board);
+
 // 5. utils and adapters for position generators
 
 bool closeMill(int position, const string &board);
 int countPieces(const string &board, const char &piece);
 string invertBoard(string board);
+bool isWinner(const string &board);
 
 // 6. MiniMax algorithm functions, TO BE PLACED IN SEPARATE FILE
 
@@ -120,7 +124,9 @@ string MiniMaxOpening(const string &board, int depth);
 GameNode MaxMin(GameNode move, int depth);
 GameNode MinMax(GameNode move, int depth);
 
-// 7. Struct for a Node in the game tree
+string MiniMaxGame(const string &board, int depth);
+GameNode MaxMinGame(GameNode move, int depth);
+GameNode MinMaxGame(GameNode move, int depth);
 
 string readFile(string fileName)
 {
@@ -191,6 +197,7 @@ void printBoard(string board)
 
 void printDelta(const string &oldBoard, const string &newBoard)
 {
+	cout << endl;
 	for (int i = 0; i < BOARD_SIZE; i++)
 	{
 		if (oldBoard[i] != newBoard[i] && oldBoard[i] == EMPTY_POSITION)
@@ -421,15 +428,20 @@ string invertBoard(string board)
 	return board;
 }
 
+bool isWinner(const string &board)
+{
+	return countPieces(board, BLACK_PIECE) <= 2;
+}
+
 string MiniMaxOpening(const string &board, int depth)
 {
 	GameNode move;
 	move.board = board;
 	move = MaxMin(move, depth);
 
-	cout << "Board Position: " << move.board << endl;
-	cout << "Positions evaluated by static estimation: " << move.positionsEvaluated << endl;
-	cout << "MINIMAX estimate: " << move.staticEstimate << endl;
+	cout << "### Board Position: " << move.board << endl;
+	cout << "### Positions evaluated by static estimation: " << move.positionsEvaluated << endl;
+	cout << "### MINIMAX estimate: " << move.staticEstimate << endl;
 
 	return move.board;
 }
@@ -496,33 +508,141 @@ GameNode MinMax(GameNode move, int depth)
 	return nextMoveBestNode;
 }
 
+string MiniMaxGame(const string &board, int depth)
+{
+	GameNode move;
+	move.board = board;
+	move = MaxMinGame(move, depth);
+
+	// TODO this prints inverted board when playing for BLACK
+	cout << "### Board Position: " << move.board << endl;
+	cout << "### Positions evaluated by static estimation: " << move.positionsEvaluated << endl;
+	cout << "### MINIMAX estimate: " << move.staticEstimate << endl;
+
+	return move.board;
+}
+
+GameNode MaxMinGame(GameNode move, int depth)
+{
+	if (depth == 0)
+	{
+		move.staticEstimate = staticEstimationMidgameEndgame(move.board);
+		move.positionsEvaluated++;
+		return move;
+	}
+	GameNode nextMoveBestNode;
+	int value = INT_MIN;
+	int eval = 0;
+	GameNode nextMoveCandidateNode;
+	vector<string> allmoves = generateMovesMidgameEndgame(move.board);
+	for (const string &nextMove : allmoves)
+	{
+		eval++;
+		nextMoveCandidateNode.board = nextMove;
+		GameNode minMax = MinMaxGame(nextMoveCandidateNode, depth - 1);
+		nextMoveCandidateNode.positionsEvaluated += minMax.positionsEvaluated;
+		if (value < minMax.staticEstimate)
+		{
+			value = minMax.staticEstimate;
+			nextMoveBestNode.board = nextMoveCandidateNode.board;
+			nextMoveBestNode.staticEstimate = value;
+			// nextMoveBestNode.next = &nextMoveCandidateNode;
+		}
+	}
+	nextMoveBestNode.positionsEvaluated += eval;
+	return nextMoveBestNode;
+}
+
+GameNode MinMaxGame(GameNode move, int depth)
+{
+	if (depth == 0)
+	{
+		move.staticEstimate = staticEstimationMidgameEndgame(move.board);
+		move.positionsEvaluated++;
+		return move;
+	}
+	GameNode nextMoveBestNode;
+	int value = INT_MAX;
+	int eval = 0;
+	GameNode nextMoveCandidateNode;
+	vector<string> allmoves = generateMovesMidgameEndgame(invertBoard(move.board));
+	for (const string &nextMove : allmoves)
+	{
+		eval++;
+		nextMoveCandidateNode.board = invertBoard(nextMove);
+		GameNode maxMin = MaxMinGame(nextMoveCandidateNode, depth - 1);
+		nextMoveCandidateNode.positionsEvaluated += maxMin.positionsEvaluated;
+		if (value > maxMin.staticEstimate)
+		{
+			value = maxMin.staticEstimate;
+			nextMoveBestNode.board = nextMoveCandidateNode.board;
+			nextMoveBestNode.staticEstimate = value;
+			// nextMoveBestNode.next = &nextMoveCandidateNode;
+		}
+	}
+	nextMoveBestNode.positionsEvaluated += eval;
+	return nextMoveBestNode;
+}
+
 void playAiVsAi(string startPosition)
 {
 	cout << "Starting game AI vs AI. WHITE to play first!" << endl;
 	int round = 0;
-	for (int i = 0; i < 8; i++)
+	// for (int i = 0; i < 8; i++)
+	// {
+	// 	// FOR RANDOM GAME
+	// 	// vector<string> whiteMoves = generateAdd(startPosition);
+	// 	// string newPosition = whiteMoves[rand() % whiteMoves.size()];
+	// 	cout << endl;
+	// 	cout << "**************************************************Round: " << ++round << endl;
+	// 	cout << "WHITE played:" << endl;
+	// 	string newPosition = MiniMaxOpening(startPosition, 4); // more than 5 takes too long
+	// 	printDelta(startPosition, newPosition);
+	// 	printBoard(newPosition);
+
+	// 	// FOR RANDOM GAME
+	// 	// string invertedBoard = invertBoard(newPosition);
+	// 	// vector<string> blackMovesInverted = generateAdd(invertedBoard);
+	// 	// string startPositionInverted = blackMovesInverted[rand() % blackMovesInverted.size()];
+	// 	cout << endl;
+	// 	cout << "**************************************************Round: " << ++round << endl;
+	// 	cout << "BLACK played:" << endl;
+	// 	startPosition = invertBoard(MiniMaxOpening(invertBoard(newPosition), 2));
+	// 	printDelta(newPosition, startPosition);
+	// 	printBoard(startPosition);
+	// }
+	// cout << "8 pieces used by each player, now entering second phase of game" << endl;
+
+	while(!isWinner(startPosition))
 	{
-		// FOR RANDOM GAME
-		// vector<string> whiteMoves = generateAdd(startPosition);
-		// string newPosition = whiteMoves[rand() % whiteMoves.size()];
-		string newPosition = MiniMaxOpening(startPosition, 2); // more than 5 takes too long
 		cout << endl;
-		cout << "**************************************************Round: " << 2 * i + 1 << endl;
+		cout << "**************************************************Round: " << ++round << endl;
 		cout << "WHITE played:" << endl;
+		string newPosition = MiniMaxGame(startPosition, 2); // more than 5 takes too long
 		printDelta(startPosition, newPosition);
 		printBoard(newPosition);
 
-		// FOR RANDOM GAME
-		// string invertedBoard = invertBoard(newPosition);
-		// vector<string> blackMovesInverted = generateAdd(invertedBoard);
-		// string startPositionInverted = blackMovesInverted[rand() % blackMovesInverted.size()];
-		startPosition = invertBoard(MiniMaxOpening(invertBoard(newPosition), 2));
 		cout << endl;
-		cout << "**************************************************Round: " << 2 * i + 2 << endl;
+		cout << "**************************************************Round: " << ++round << endl;
 		cout << "BLACK played:" << endl;
+		startPosition = invertBoard(MiniMaxGame(invertBoard(newPosition), 3));
 		printDelta(newPosition, startPosition);
 		printBoard(startPosition);
+
+		if(round>=100)
+		{
+			cout << "~~~~~!! GAME TIED AT ROUND " << round << " !!~~~~~" << endl;
+			return;
+		}
+
+		if(isWinner(invertBoard(startPosition)))
+		{
+			cout << "~~~~~!! BLACK WINS !!~~~~~" << endl;
+			return;
+		}
 	}
+	cout << "~~~~~!! WHITE WINS !!~~~~~" << endl;
+	return;
 }
 
 int main(int argc, char *argv[])
@@ -536,11 +656,18 @@ int main(int argc, char *argv[])
 	// cout << "Board as string: " << currentPosition << endl;
 	// printBoard(currentPosition);
 
-	playAiVsAi(EMPTY_BOARD);
+	/* TESTING SUITE: */
+	// string currentBoard = "xxxxxxxWxxWxxxBxxxxxx";
+	// string newPosition = MiniMaxOpening(currentBoard, 5); // more than 5 takes too long
+	// printDelta(currentBoard, newPosition);
+	// printBoard(newPosition);
 
 	// both can get a mill out of this, will white make a mill or block black or do something else
 	// string currentBoard = "WxxBxxxxxxBxxxxxxxWx";
 	// printBoard(currentBoard);
 	// string nextMove = MiniMaxOpening(currentBoard, 2);
 	// printBoard(nextMove);
+
+	string midEndGameSample = "xWWBxBWWWBWxxxWxWxxBx";
+	playAiVsAi(midEndGameSample);
 }
