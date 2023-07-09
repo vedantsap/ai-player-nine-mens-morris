@@ -53,7 +53,7 @@ void playAiVsAi(string startPosition)
         printDelta(newPosition, startPosition);
         printBoard(startPosition);
 
-        if (round >= 100)
+        if (round >= 60)
         {
             cout << "~~~~~!! GAME TIED AT ROUND " << round << " !!~~~~~" << endl;
             return;
