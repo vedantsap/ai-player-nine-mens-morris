@@ -1,9 +1,10 @@
-#include "../headers/constants.h"
-#include "../headers/board.h"
-#include "../headers/prototypes.h"
-#include "../headers/fileIO.h"
-#include "../headers/staticEstimators.h"
-#include "../headers/generator.h"
+#include "../src/headers/constants.h"
+#include "../src/headers/board.h"
+#include "../src/headers/prototypes.h"
+#include "../src/headers/fileIO.h"
+#include "../src/headers/staticEstimators.h"
+#include "../src/headers/generator.h"
+#include "../src/headers/minimax.h"
 
 using namespace std;
 

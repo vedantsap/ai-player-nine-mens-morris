@@ -1,6 +1,8 @@
 #ifndef PROTOTYPES_H
 #define PROTOTYPES_H
 
+#include "constants.h"
+
 // METHOD PROTOTYPES
 // 1. board position and file handling utilities
 
