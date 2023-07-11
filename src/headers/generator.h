@@ -25,7 +25,10 @@ vector<string> generateMovesOpening(const string &board)
  */
 vector<string> generateMovesMidgameEndgame(const string &board)
 {
-	if (countPieces(board, WHITE_PIECE) == 3)
+	int count = countPieces(board, WHITE_PIECE);
+	if (count < 3)
+		return {};
+	if (count == 3)
 	{
 		return generateHopping(board);
 	}

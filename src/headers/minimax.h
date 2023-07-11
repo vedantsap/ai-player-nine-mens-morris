@@ -4,14 +4,32 @@
 #include "constants.h"
 #include "prototypes.h"
 
+// Global variable to keep count of positions evaluated
+int numberOfPositionsEvaluated = 0;
+
 string MiniMaxOpening(const string &board, int depth)
 {
 	GameNode move;
 	move.board = board;
+	numberOfPositionsEvaluated = 0;
 	move = MaxMin(move, depth);
 
 	cout << "### Board Position: " << move.board << endl;
-	cout << "### Positions evaluated by static estimation: " << move.positionsEvaluated << endl;
+	cout << "### Positions evaluated by static estimation: " << numberOfPositionsEvaluated << endl;
+	cout << "### MINIMAX estimate: " << move.staticEstimate << endl;
+
+	return move.board;
+}
+
+string MiniMaxOpeningBlack(const string &board, int depth)
+{
+	GameNode move;
+	move.board = board;
+	numberOfPositionsEvaluated = 0;
+	move = MinMax(move, depth);
+
+	cout << "### Board Position: " << move.board << endl;
+	cout << "### Positions evaluated by static estimation: " << numberOfPositionsEvaluated << endl;
 	cout << "### MINIMAX estimate: " << move.staticEstimate << endl;
 
 	return move.board;
@@ -21,21 +39,18 @@ GameNode MaxMin(GameNode move, int depth)
 {
 	if (depth == 0)
 	{
+		numberOfPositionsEvaluated++;
 		move.staticEstimate = staticEstimationOpening(move.board);
-		move.positionsEvaluated++;
 		return move;
 	}
 	GameNode nextMoveBestNode;
 	int value = INT_MIN;
-	int eval = 0;
 	GameNode nextMoveCandidateNode;
 	vector<string> allmoves = generateMovesOpening(move.board);
 	for (const string &nextMove : allmoves)
 	{
-		eval++;
 		nextMoveCandidateNode.board = nextMove;
 		GameNode minMax = MinMax(nextMoveCandidateNode, depth - 1);
-		nextMoveCandidateNode.positionsEvaluated += minMax.positionsEvaluated;
 		if (value < minMax.staticEstimate)
 		{
 			value = minMax.staticEstimate;
@@ -44,7 +59,6 @@ GameNode MaxMin(GameNode move, int depth)
 			// nextMoveBestNode.next = &nextMoveCandidateNode;
 		}
 	}
-	nextMoveBestNode.positionsEvaluated += eval;
 	return nextMoveBestNode;
 }
 
@@ -52,21 +66,18 @@ GameNode MinMax(GameNode move, int depth)
 {
 	if (depth == 0)
 	{
+		numberOfPositionsEvaluated++;
 		move.staticEstimate = staticEstimationOpening(move.board);
-		move.positionsEvaluated++;
 		return move;
 	}
 	GameNode nextMoveBestNode;
 	int value = INT_MAX;
-	int eval = 0;
 	GameNode nextMoveCandidateNode;
 	vector<string> allmoves = generateMovesOpening(invertBoard(move.board));
 	for (const string &nextMove : allmoves)
 	{
-		eval++;
 		nextMoveCandidateNode.board = invertBoard(nextMove);
 		GameNode maxMin = MaxMin(nextMoveCandidateNode, depth - 1);
-		nextMoveCandidateNode.positionsEvaluated += maxMin.positionsEvaluated;
 		if (value > maxMin.staticEstimate)
 		{
 			value = maxMin.staticEstimate;
@@ -75,19 +86,34 @@ GameNode MinMax(GameNode move, int depth)
 			// nextMoveBestNode.next = &nextMoveCandidateNode;
 		}
 	}
-	nextMoveBestNode.positionsEvaluated += eval;
 	return nextMoveBestNode;
 }
+
+//////////////////////// maybe separate the below into another .h file
 
 string MiniMaxGame(const string &board, int depth)
 {
 	GameNode move;
 	move.board = board;
+	numberOfPositionsEvaluated = 0;
 	move = MaxMinGame(move, depth);
 
-	// TODO this prints inverted board when playing for BLACK
 	cout << "### Board Position: " << move.board << endl;
-	cout << "### Positions evaluated by static estimation: " << move.positionsEvaluated << endl;
+	cout << "### Positions evaluated by static estimation: " << numberOfPositionsEvaluated << endl;
+	cout << "### MINIMAX estimate: " << move.staticEstimate << endl;
+
+	return move.board;
+}
+
+string MiniMaxGameBlack(const string &board, int depth)
+{
+	GameNode move;
+	move.board = board;
+	numberOfPositionsEvaluated = 0;
+	move = MinMaxGame(move, depth);
+
+	cout << "### Board Position: " << move.board << endl;
+	cout << "### Positions evaluated by static estimation: " << numberOfPositionsEvaluated << endl;
 	cout << "### MINIMAX estimate: " << move.staticEstimate << endl;
 
 	return move.board;
@@ -98,20 +124,17 @@ GameNode MaxMinGame(GameNode move, int depth)
 	if (depth == 0)
 	{
 		move.staticEstimate = staticEstimationMidgameEndgame(move.board);
-		move.positionsEvaluated++;
+		numberOfPositionsEvaluated++;
 		return move;
 	}
 	GameNode nextMoveBestNode;
 	int value = INT_MIN;
-	int eval = 0;
 	GameNode nextMoveCandidateNode;
 	vector<string> allmoves = generateMovesMidgameEndgame(move.board);
 	for (const string &nextMove : allmoves)
 	{
-		eval++;
 		nextMoveCandidateNode.board = nextMove;
 		GameNode minMax = MinMaxGame(nextMoveCandidateNode, depth - 1);
-		nextMoveCandidateNode.positionsEvaluated += minMax.positionsEvaluated;
 		if (value < minMax.staticEstimate)
 		{
 			value = minMax.staticEstimate;
@@ -120,7 +143,6 @@ GameNode MaxMinGame(GameNode move, int depth)
 			// nextMoveBestNode.next = &nextMoveCandidateNode;
 		}
 	}
-	nextMoveBestNode.positionsEvaluated += eval;
 	return nextMoveBestNode;
 }
 
@@ -129,20 +151,17 @@ GameNode MinMaxGame(GameNode move, int depth)
 	if (depth == 0)
 	{
 		move.staticEstimate = staticEstimationMidgameEndgame(move.board);
-		move.positionsEvaluated++;
+		numberOfPositionsEvaluated++;
 		return move;
 	}
 	GameNode nextMoveBestNode;
 	int value = INT_MAX;
-	int eval = 0;
 	GameNode nextMoveCandidateNode;
 	vector<string> allmoves = generateMovesMidgameEndgame(invertBoard(move.board));
 	for (const string &nextMove : allmoves)
 	{
-		eval++;
 		nextMoveCandidateNode.board = invertBoard(nextMove);
 		GameNode maxMin = MaxMinGame(nextMoveCandidateNode, depth - 1);
-		nextMoveCandidateNode.positionsEvaluated += maxMin.positionsEvaluated;
 		if (value > maxMin.staticEstimate)
 		{
 			value = maxMin.staticEstimate;
@@ -151,7 +170,6 @@ GameNode MinMaxGame(GameNode move, int depth)
 			// nextMoveBestNode.next = &nextMoveCandidateNode;
 		}
 	}
-	nextMoveBestNode.positionsEvaluated += eval;
 	return nextMoveBestNode;
 }
 

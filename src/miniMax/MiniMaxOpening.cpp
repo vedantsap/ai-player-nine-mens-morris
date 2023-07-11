@@ -14,14 +14,14 @@ int main(int argc, char *argv[])
 {
 	if (argc != 4)
 	{
-		cout << "There should be only 4 parameters! Example : MiniMaxOepening.exe board1.txt board2.txt 2" << endl;
+		cout << "There should be only 4 parameters! Example : .\\MiniMaxOepening.exe board1.txt board2.txt 2" << endl;
 		return -1;
 	}
 	string currentPosition = readFile(argv[1]);
 	cout << "Board as string: " << currentPosition << endl;
 	printBoard(currentPosition);
-	string newPosition = MiniMaxOpening(currentPosition, 2);
+	string newPosition = MiniMaxOpening(currentPosition, atoi(argv[3]));
 	printDelta(currentPosition, newPosition);
 	printBoard(newPosition);
-	writeFile("board2.txt", newPosition);
+	writeFile(argv[2], newPosition);
 }

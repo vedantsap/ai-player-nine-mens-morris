@@ -1,10 +1,10 @@
-#ifndef STATICESTIMATORS_H
-#define STATICESTIMATORS_H
+#ifndef IMPROVEDSTATICESTIMATIONH
+#define IMPROVEDSTATICESTIMATIONH
 
 #include "prototypes.h"
 #include "constants.h"
 
-int staticEstimationOpening(const string &board)
+int improvedStaticEstimationOpening(const string &board)
 {
 	// TODO: enable memoization
 	// if(STATIC_ESTIMATE_CACHE[board]==0)
@@ -12,16 +12,15 @@ int staticEstimationOpening(const string &board)
 	// 	STATIC_ESTIMATE_CACHE[board] = countPieces(board, WHITE_PIECE) - countPieces(board, BLACK_PIECE);
 	// }
 	// return STATIC_ESTIMATE_CACHE[board];
-	return countPieces(board, WHITE_PIECE) - countPieces(board, BLACK_PIECE);
-	// int plainStaticEstimate = countPieces(board, WHITE_PIECE) - countPieces(board, BLACK_PIECE);
-    // int halfMillScore = 0;
-    // for(int i=0; i<BOARD_SIZE; i++) {
-    //     if(board[i]==WHITE_PIECE) halfMillScore += halfOuterMills.at(i).size();
-    // }
-    // return 100 * plainStaticEstimate + 10 * halfMillScore;
+	int plainStaticEstimate = countPieces(board, WHITE_PIECE) - countPieces(board, BLACK_PIECE);
+    int halfMillScore = 0;
+    for(int i=0; i<BOARD_SIZE; i++) {
+        if(board[i]==WHITE_PIECE) halfMillScore += halfOuterMills.at(i).size();
+    }
+    return 100 * plainStaticEstimate + 10 * halfMillScore;
 }
 
-int staticEstimationMidgameEndgame(const string &board)
+int improvedStaticEstimationMidgameEndgame(const string &board)
 {
 	int numBlackPieces = countPieces(board, BLACK_PIECE);
 	if (numBlackPieces <= 2)

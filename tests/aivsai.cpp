@@ -14,9 +14,6 @@ void playAiVsAi(string startPosition)
     int round = 0;
     for (int i = 0; i < 8; i++)
     {
-    	// FOR RANDOM GAME
-    	// vector<string> whiteMoves = generateAdd(startPosition);
-    	// string newPosition = whiteMoves[rand() % whiteMoves.size()];
     	cout << endl;
     	cout << "**************************************************Round: " << ++round << endl;
     	cout << "WHITE played:" << endl;
@@ -24,14 +21,10 @@ void playAiVsAi(string startPosition)
     	printDelta(startPosition, newPosition);
     	printBoard(newPosition);
 
-    	// FOR RANDOM GAME
-    	// string invertedBoard = invertBoard(newPosition);
-    	// vector<string> blackMovesInverted = generateAdd(invertedBoard);
-    	// string startPositionInverted = blackMovesInverted[rand() % blackMovesInverted.size()];
     	cout << endl;
     	cout << "**************************************************Round: " << ++round << endl;
     	cout << "BLACK played:" << endl;
-    	startPosition = invertBoard(MiniMaxOpening(invertBoard(newPosition), 2));
+    	startPosition = MiniMaxOpeningBlack(newPosition, 2);
     	printDelta(newPosition, startPosition);
     	printBoard(startPosition);
     }
@@ -42,14 +35,14 @@ void playAiVsAi(string startPosition)
         cout << endl;
         cout << "**************************************************Round: " << ++round << endl;
         cout << "WHITE played:" << endl;
-        string newPosition = MiniMaxGame(startPosition, 2); // more than 5 takes too long
+        string newPosition = MiniMaxGame(startPosition, 4); // more than 5 takes too long
         printDelta(startPosition, newPosition);
         printBoard(newPosition);
 
         cout << endl;
         cout << "**************************************************Round: " << ++round << endl;
         cout << "BLACK played:" << endl;
-        startPosition = invertBoard(MiniMaxGame(invertBoard(newPosition), 3));
+        startPosition = MiniMaxGameBlack(newPosition, 2);
         printDelta(newPosition, startPosition);
         printBoard(startPosition);
 
@@ -82,6 +75,5 @@ int main(int argc, char *argv[])
         cout << "Starting with board " << startPosition << ", WHITE play first" << endl;
     }
 
-    // string midEndGameSample = "xWWBxBWWWBWxxxWxWxxBx";
     playAiVsAi(startPosition);
 }

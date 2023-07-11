@@ -4,26 +4,27 @@
 void printBoard(string board)
 {
 	replace(board.begin(), board.end(), EMPTY_POSITION, '.');
-	cout << board[18]
+	cout << endl;
+	cout << "          " << board[18]
 		 << " - - "
 		 << board[19]
 		 << " - - "
 		 << board[20] << endl;
-	cout << "| "
+	cout << "          " << "| "
 		 << board[15]
 		 << " - "
 		 << board[16]
 		 << " - "
 		 << board[17]
 		 << " |" << endl;
-	cout << "| | "
+	cout << "          " << "| | "
 		 << board[12]
 		 << " "
 		 << board[13]
 		 << " "
 		 << board[14]
 		 << " | |" << endl;
-	cout << board[6]
+	cout << "          " << board[6]
 		 << " "
 		 << board[7]
 		 << " "
@@ -34,17 +35,17 @@ void printBoard(string board)
 		 << board[10]
 		 << " "
 		 << board[11] << endl;
-	cout << "| | "
+	cout << "          " << "| | "
 		 << board[4]
 		 << " - "
 		 << board[5]
 		 << " | |" << endl;
-	cout << "| "
+	cout << "          " << "| "
 		 << board[2]
 		 << " - - - "
 		 << board[3]
 		 << " |" << endl;
-	cout << board[0]
+	cout << "          " << board[0]
 		 << " - - - - - "
 		 << board[1] << endl;
 	cout << endl;

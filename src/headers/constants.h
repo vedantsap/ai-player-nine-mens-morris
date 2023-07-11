@@ -23,6 +23,10 @@ const int STATIC_ESTIMATE_MINIMUM = -10000;
 const int STATIC_ESTIMATE_MAXIMUM = 10000;
 const int STATIC_ESTIMATE_MIDGAME_ENDGAME_MULTIPLIER = 1000;
 
+const int IMPROVED_STATIC_ESTIMATE_MINIMUM = -10000;
+const int IMPROVED_STATIC_ESTIMATE_MAXIMUM = 10000;
+const int IMPROVED_STATIC_ESTIMATE_MIDGAME_ENDGAME_MULTIPLIER = 1000;
+
 struct GameNode
 {
 	string board;
@@ -58,8 +62,8 @@ const unordered_map<int, vector<int>> neighbors = {
 
 /**
  * Mapping to store value of mills possible at each board position
- * key: position on board
- * value: mills that can be made with this position
+ * @key: position on board
+ * @value: mills that can be made with this position
  */
 const unordered_map<int, vector<vector<int>>> mills = {
 	{0, {{0, 6, 18}}},
@@ -83,6 +87,35 @@ const unordered_map<int, vector<vector<int>>> mills = {
 	{18, {{18, 19, 20}, {0, 6, 18}}},
 	{19, {{18, 19, 20}, {13, 16, 19}}},
 	{20, {{18, 19, 20}, {1, 11, 20}}},
+};
+
+/**
+ * Mapping to store value of half outer mills possible at each board position
+ * @key: position on board
+ * @value: half outer mills that can be made with this position
+ */
+const unordered_map<int, vector<vector<int>>> halfOuterMills = {
+	{0, {{0, 18}}},
+	{1, {{1, 20}}},
+	{2, {{2, 15}}},
+	{3, {{3, 17}}},
+	{4, {{4, 12}}},
+	{5, {{5, 14}}},
+	{6, {{6, 8}}},
+	{7, {}},
+	{8, {{6, 8}}},
+	{9, {{9, 11}}},
+	{10, {}},
+	{11, {{9, 11}}},
+	{12, {{12, 14}, {4, 12}}},
+	{13, {{13, 19}}},
+	{14, {{12, 14}, {5, 14}}},
+	{15, {{15, 17}, {2, 15}}},
+	{16, {}},
+	{17, {{15, 17}, {3, 17}}},
+	{18, {{18, 20}, {0, 18}}},
+	{19, {{13, 19}}},
+	{20, {{18, 20}, {1, 20}}},
 };
 
 #endif
