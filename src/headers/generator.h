@@ -139,7 +139,7 @@ void generateRemove(const string &board, vector<string> &moves)
 			moves.push_back(generatedBoard);
 		}
 	}
-	// If no black pieces could removed (all were within mills) and continue with the same board
+	// If no black pieces could be removed (all were within mills) then continue with the same board
 	if (!blackPiecesRemoved)
 	{
 		moves.push_back(board);

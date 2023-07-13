@@ -10,14 +10,16 @@ void printBoard(string board)
 		 << board[19]
 		 << " - - "
 		 << board[20] << endl;
-	cout << "          " << "| "
+	cout << "          "
+		 << "| "
 		 << board[15]
 		 << " - "
 		 << board[16]
 		 << " - "
 		 << board[17]
 		 << " |" << endl;
-	cout << "          " << "| | "
+	cout << "          "
+		 << "| | "
 		 << board[12]
 		 << " "
 		 << board[13]
@@ -35,12 +37,14 @@ void printBoard(string board)
 		 << board[10]
 		 << " "
 		 << board[11] << endl;
-	cout << "          " << "| | "
+	cout << "          "
+		 << "| | "
 		 << board[4]
 		 << " - "
 		 << board[5]
 		 << " | |" << endl;
-	cout << "          " << "| "
+	cout << "          "
+		 << "| "
 		 << board[2]
 		 << " - - - "
 		 << board[3]

@@ -6,19 +6,7 @@
 
 int staticEstimationOpening(const string &board)
 {
-	// TODO: enable memoization
-	// if(STATIC_ESTIMATE_CACHE[board]==0)
-	// {
-	// 	STATIC_ESTIMATE_CACHE[board] = countPieces(board, WHITE_PIECE) - countPieces(board, BLACK_PIECE);
-	// }
-	// return STATIC_ESTIMATE_CACHE[board];
 	return countPieces(board, WHITE_PIECE) - countPieces(board, BLACK_PIECE);
-	// int plainStaticEstimate = countPieces(board, WHITE_PIECE) - countPieces(board, BLACK_PIECE);
-    // int halfMillScore = 0;
-    // for(int i=0; i<BOARD_SIZE; i++) {
-    //     if(board[i]==WHITE_PIECE) halfMillScore += halfOuterMills.at(i).size();
-    // }
-    // return 100 * plainStaticEstimate + 10 * halfMillScore;
 }
 
 int staticEstimationMidgameEndgame(const string &board)
@@ -38,6 +26,11 @@ int staticEstimationMidgameEndgame(const string &board)
 	{
 		return STATIC_ESTIMATE_MAXIMUM;
 	}
+	// vector<string> whitekMoves = generateMovesMidgameEndgame(board);
+	// if (whitekMoves.size() == 0)
+	// {
+	// 	return STATIC_ESTIMATE_MINIMUM;
+	// }
 	return STATIC_ESTIMATE_MIDGAME_ENDGAME_MULTIPLIER * (numWhitePieces - numBlackPieces) - blackMoves.size();
 }
 

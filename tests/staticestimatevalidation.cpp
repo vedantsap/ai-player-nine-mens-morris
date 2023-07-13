@@ -20,5 +20,6 @@ int main(int argc, char *argv[])
     }
     printBoard(startPosition);
     int estimate = staticEstimationMidgameEndgame(startPosition);
-    cout << endl << "Calculated static estimate for above board: " << estimate << endl;
+    cout << endl
+         << "Calculated static estimate for above board: " << estimate << endl;
 }

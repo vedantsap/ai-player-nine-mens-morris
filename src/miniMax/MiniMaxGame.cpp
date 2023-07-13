@@ -22,12 +22,4 @@ int main(int argc, char *argv[])
 	printDelta(currentPosition, newPosition);
 	printBoard(newPosition);
 	writeFile(argv[2], newPosition);
-
-	// for debug purposes
-	// string currentPosition = "xWWBWBxWWBWBxxWxxxxWx";
-	// cout << "Board as string: " << currentPosition << endl;
-	// printBoard(currentPosition);
-	// string newPosition = MiniMaxGame(currentPosition, 2);
-	// printDelta(currentPosition, newPosition);
-	// printBoard(newPosition);
 }

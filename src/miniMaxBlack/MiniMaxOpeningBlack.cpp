@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
 {
 	if (argc != 4)
 	{
-		cout << "There should be only 4 parameters! Example : .\\MiniMaxOepening.exe board1.txt board2.txt 2" << endl;
+		cout << "There should be only 4 parameters! Example : .\\MiniMaxOpeningBlack.exe board1.txt board2.txt 2" << endl;
 		return -1;
 	}
 	string currentPosition = readFile(argv[1]);

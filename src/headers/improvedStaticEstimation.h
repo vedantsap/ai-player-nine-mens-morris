@@ -4,7 +4,7 @@
 #include "prototypes.h"
 #include "constants.h"
 
-int improvedStaticEstimationOpening(const string &board)
+int staticEstimationOpeningImproved(const string &board)
 {
 	// TODO: enable memoization
 	// if(STATIC_ESTIMATE_CACHE[board]==0)
@@ -13,14 +13,16 @@ int improvedStaticEstimationOpening(const string &board)
 	// }
 	// return STATIC_ESTIMATE_CACHE[board];
 	int plainStaticEstimate = countPieces(board, WHITE_PIECE) - countPieces(board, BLACK_PIECE);
-    int halfMillScore = 0;
-    for(int i=0; i<BOARD_SIZE; i++) {
-        if(board[i]==WHITE_PIECE) halfMillScore += halfOuterMills.at(i).size();
-    }
-    return 100 * plainStaticEstimate + 10 * halfMillScore;
+	int halfMillScore = 0;
+	for (int i = 0; i < BOARD_SIZE; i++)
+	{
+		if (board[i] == WHITE_PIECE)
+			halfMillScore += halfOuterMills.at(i).size();
+	}
+	return 100 * plainStaticEstimate + 10 * halfMillScore;
 }
 
-int improvedStaticEstimationMidgameEndgame(const string &board)
+int staticEstimationMidgameEndgameImproved(const string &board)
 {
 	int numBlackPieces = countPieces(board, BLACK_PIECE);
 	if (numBlackPieces <= 2)

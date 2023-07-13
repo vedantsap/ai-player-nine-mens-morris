@@ -7,7 +7,7 @@
 // 1. board position and file handling utilities
 
 string readFile(string fileName);
-// writefile
+void writeFile(string fileName, string board);
 void printBoard(string board);
 void printDelta(const string &oldBoard, const string &newBoard);
 
@@ -27,9 +27,8 @@ void generateRemove(const string &board, vector<string> &positions);
 
 int staticEstimationOpening(const string &board);
 int staticEstimationMidgameEndgame(const string &board);
-
-// int staticEstimationOpeningImproved(const string &board);
-// int staticEstimationMidgameEndgameImproved(const string &board);
+int staticEstimationOpeningImproved(const string &board);
+int staticEstimationMidgameEndgameImproved(const string &board);
 
 // 5. utils and adapters for position generators
 
@@ -38,7 +37,7 @@ int countPieces(const string &board, const char &piece);
 string invertBoard(string board);
 bool isWinner(const string &board);
 
-// 6. MiniMax algorithm functions, TO BE PLACED IN SEPARATE FILE
+// 6. MiniMax algorithm functions
 
 string MiniMaxOpening(const string &board, int depth);
 string MiniMaxOpeningBlack(const string &board, int depth);

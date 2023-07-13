@@ -1,7 +1,6 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
-// Define constants to be used across the program
 #include <iostream>
 #include <string>
 #include <fstream>

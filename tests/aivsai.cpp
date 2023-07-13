@@ -15,28 +15,28 @@ void playAiVsAi(string startPosition)
     int round = 0;
     for (int i = 0; i < 8; i++)
     {
-    	cout << endl;
-    	cout << "**************************************************Round: " << ++round << endl;
-    	cout << "WHITE played:" << endl;
-    	string newPosition = AlphaBetaOpening(startPosition, 4); // more than 5 takes too long
-    	printDelta(startPosition, newPosition);
-    	printBoard(newPosition);
+        cout << endl;
+        cout << "************************************************** Round: " << ++round << endl;
+        cout << "WHITE played:" << endl;
+        string newPosition = AlphaBetaOpening(startPosition, 3); // more than 5 takes too long
+        printDelta(startPosition, newPosition);
+        printBoard(newPosition);
 
-    	cout << endl;
-    	cout << "**************************************************Round: " << ++round << endl;
-    	cout << "BLACK played:" << endl;
-    	startPosition = AlphaBetaOpeningBlack(newPosition, 2);
-    	printDelta(newPosition, startPosition);
-    	printBoard(startPosition);
+        cout << endl;
+        cout << "************************************************** Round: " << ++round << endl;
+        cout << "BLACK played:" << endl;
+        startPosition = AlphaBetaOpeningBlack(newPosition, 2);
+        printDelta(newPosition, startPosition);
+        printBoard(startPosition);
     }
     cout << "8 pieces used by each player, now entering second phase of game" << endl;
 
     while (!isWinner(startPosition))
     {
         cout << endl;
-        cout << "**************************************************Round: " << ++round << endl;
+        cout << "************************************************** Round: " << ++round << endl;
         cout << "WHITE played:" << endl;
-        string newPosition = AlphaBetaGame(startPosition, 4); // more than 5 takes too long
+        string newPosition = AlphaBetaGame(startPosition, 3); // more than 5 takes too long
         printDelta(startPosition, newPosition);
         printBoard(newPosition);
         if (isWinner(newPosition))
@@ -46,9 +46,9 @@ void playAiVsAi(string startPosition)
         }
 
         cout << endl;
-        cout << "**************************************************Round: " << ++round << endl;
+        cout << "************************************************** Round: " << ++round << endl;
         cout << "BLACK played:" << endl;
-        startPosition = AlphaBetaGameBlack(newPosition, 4);
+        startPosition = AlphaBetaGameBlack(newPosition, 2);
         printDelta(newPosition, startPosition);
         printBoard(startPosition);
         if (isWinner(invertBoard(startPosition)))

@@ -20,9 +20,10 @@ string readFile(string fileName)
 	return boardPosition;
 }
 
-void writeFile(string fileName, string board) {
+void writeFile(string fileName, string board)
+{
 	ofstream boardPositionFile(fileName);
-	if(boardPositionFile.is_open())
+	if (boardPositionFile.is_open())
 	{
 		boardPositionFile << board;
 		boardPositionFile.close();

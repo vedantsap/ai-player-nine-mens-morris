@@ -46,7 +46,7 @@ GameNode MaxMin(GameNode &move, int depth)
 	}
 	GameNode nextMoveBestNode;
 	GameNode nextMoveCandidateNode;
-	int value = STATIC_ESTIMATE_MINIMUM;
+	int value = STATIC_ESTIMATE_MINIMUM - 1;
 	vector<string> allmoves = generateMovesOpening(move.board);
 	for (const string &nextMove : allmoves)
 	{
@@ -72,7 +72,7 @@ GameNode MinMax(GameNode &move, int depth)
 	}
 	GameNode nextMoveBestNode;
 	GameNode nextMoveCandidateNode;
-	int value = STATIC_ESTIMATE_MAXIMUM;
+	int value = STATIC_ESTIMATE_MAXIMUM + 1;
 	vector<string> allmoves = generateMovesOpening(invertBoard(move.board));
 	for (const string &nextMove : allmoves)
 	{
@@ -87,8 +87,6 @@ GameNode MinMax(GameNode &move, int depth)
 	}
 	return nextMoveBestNode;
 }
-
-//////////////////////// maybe separate the below into another .h file
 
 string MiniMaxGame(const string &board, int depth)
 {
@@ -130,7 +128,7 @@ GameNode MaxMinGame(GameNode &move, int depth)
 	}
 	GameNode nextMoveBestNode;
 	GameNode nextMoveCandidateNode;
-	int value = STATIC_ESTIMATE_MINIMUM;
+	int value = STATIC_ESTIMATE_MINIMUM - 1;
 	vector<string> allmoves = generateMovesMidgameEndgame(move.board);
 	if (allmoves.size() == 0)
 	{
@@ -161,7 +159,7 @@ GameNode MinMaxGame(GameNode &move, int depth)
 	}
 	GameNode nextMoveBestNode;
 	GameNode nextMoveCandidateNode;
-	int value = STATIC_ESTIMATE_MAXIMUM;
+	int value = STATIC_ESTIMATE_MAXIMUM + 1;
 	vector<string> allmoves = generateMovesMidgameEndgame(invertBoard(move.board));
 	if (allmoves.size() == 0)
 	{
