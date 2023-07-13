@@ -7,6 +7,7 @@
 // 1. board position and file handling utilities
 
 string readFile(string fileName);
+// writefile
 void printBoard(string board);
 void printDelta(const string &oldBoard, const string &newBoard);
 
@@ -40,11 +41,23 @@ bool isWinner(const string &board);
 // 6. MiniMax algorithm functions, TO BE PLACED IN SEPARATE FILE
 
 string MiniMaxOpening(const string &board, int depth);
-GameNode MaxMin(GameNode move, int depth);
-GameNode MinMax(GameNode move, int depth);
+string MiniMaxOpeningBlack(const string &board, int depth);
+GameNode MaxMin(GameNode &move, int depth);
+GameNode MinMax(GameNode &move, int depth);
+
+string AlphaBetaOpening(const string &board, int depth);
+string AlphaBetaOpeningBlack(const string &board, int depth);
+GameNode MaxMin(GameNode &move, int alpha, int beta, int depth);
+GameNode MinMax(GameNode &move, int alpha, int beta, int depth);
 
 string MiniMaxGame(const string &board, int depth);
-GameNode MaxMinGame(GameNode move, int depth);
-GameNode MinMaxGame(GameNode move, int depth);
+string MiniMaxGameBlack(const string &board, int depth);
+GameNode MaxMinGame(GameNode &move, int depth);
+GameNode MinMaxGame(GameNode &move, int depth);
+
+string AlphaBetaGame(const string &board, int depth);
+string AlphaBetaGameBlack(const string &board, int depth);
+GameNode MaxMinGame(GameNode &move, int alpha, int beta, int depth);
+GameNode MinMaxGame(GameNode &move, int alpha, int beta, int depth);
 
 #endif

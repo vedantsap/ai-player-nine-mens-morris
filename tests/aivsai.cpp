@@ -5,6 +5,7 @@
 #include "../src/headers/staticEstimators.h"
 #include "../src/headers/generator.h"
 #include "../src/headers/minimax.h"
+#include "../src/headers/alphabeta.h"
 
 using namespace std;
 
@@ -17,14 +18,14 @@ void playAiVsAi(string startPosition)
     	cout << endl;
     	cout << "**************************************************Round: " << ++round << endl;
     	cout << "WHITE played:" << endl;
-    	string newPosition = MiniMaxOpening(startPosition, 4); // more than 5 takes too long
+    	string newPosition = AlphaBetaOpening(startPosition, 4); // more than 5 takes too long
     	printDelta(startPosition, newPosition);
     	printBoard(newPosition);
 
     	cout << endl;
     	cout << "**************************************************Round: " << ++round << endl;
     	cout << "BLACK played:" << endl;
-    	startPosition = MiniMaxOpeningBlack(newPosition, 2);
+    	startPosition = AlphaBetaOpeningBlack(newPosition, 2);
     	printDelta(newPosition, startPosition);
     	printBoard(startPosition);
     }
@@ -35,31 +36,33 @@ void playAiVsAi(string startPosition)
         cout << endl;
         cout << "**************************************************Round: " << ++round << endl;
         cout << "WHITE played:" << endl;
-        string newPosition = MiniMaxGame(startPosition, 4); // more than 5 takes too long
+        string newPosition = AlphaBetaGame(startPosition, 4); // more than 5 takes too long
         printDelta(startPosition, newPosition);
         printBoard(newPosition);
+        if (isWinner(newPosition))
+        {
+            cout << "~~~~~~~~!! WHITE WINS !!~~~~~~~~" << endl;
+            return;
+        }
 
         cout << endl;
         cout << "**************************************************Round: " << ++round << endl;
         cout << "BLACK played:" << endl;
-        startPosition = MiniMaxGameBlack(newPosition, 2);
+        startPosition = AlphaBetaGameBlack(newPosition, 4);
         printDelta(newPosition, startPosition);
         printBoard(startPosition);
+        if (isWinner(invertBoard(startPosition)))
+        {
+            cout << "~~~~~~~~!! BLACK WINS !!~~~~~~~~" << endl;
+            return;
+        }
 
         if (round >= 60)
         {
-            cout << "~~~~~!! GAME TIED AT ROUND " << round << " !!~~~~~" << endl;
-            return;
-        }
-
-        if (isWinner(invertBoard(startPosition)))
-        {
-            cout << "~~~~~!! BLACK WINS !!~~~~~" << endl;
+            cout << "~~~~~~~~!! GAME TIED AT ROUND " << round << " !!~~~~~~~~" << endl;
             return;
         }
     }
-    cout << "~~~~~!! WHITE WINS !!~~~~~" << endl;
-    return;
 }
 
 int main(int argc, char *argv[])

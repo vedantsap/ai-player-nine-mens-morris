@@ -11,7 +11,6 @@
  * @return a list of valid board positions after adding
  *
  */
-
 vector<string> generateMovesOpening(const string &board)
 {
 	return generateAdd(board);
@@ -113,7 +112,7 @@ vector<string> generateHopping(const string &board)
 					}
 					else
 					{
-						positions.push_back(generatedBoard);
+						positions.emplace_back(generatedBoard);
 					}
 				}
 			}

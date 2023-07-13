@@ -6,10 +6,6 @@
 #include "../headers/generator.h"
 #include "../headers/minimax.h"
 
-using namespace std;
-
-// TODO Black Move generator adapter
-
 int main(int argc, char *argv[])
 {
 	if (argc != 4)

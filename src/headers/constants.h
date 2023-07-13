@@ -31,9 +31,6 @@ struct GameNode
 {
 	string board;
 	int staticEstimate = 0;
-	int positionsEvaluated = 0;
-	GameNode *next;
-	// is leaf?
 };
 
 // Mapping to store neighbors of positions as an adjacency list
