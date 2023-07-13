@@ -5,7 +5,9 @@
 #include "../src/headers/staticEstimators.h"
 #include "../src/headers/generator.h"
 #include "../src/headers/minimax.h"
+#include "../src/headers/minimaxImproved.h"
 #include "../src/headers/alphabeta.h"
+#include "../src/headers/improvedStaticEstimation.h"
 
 using namespace std;
 
@@ -18,14 +20,14 @@ void playAiVsAi(string startPosition)
         cout << endl;
         cout << "************************************************** Round: " << ++round << endl;
         cout << "WHITE played:" << endl;
-        string newPosition = AlphaBetaOpening(startPosition, 3); // more than 5 takes too long
+        string newPosition = MiniMaxOpeningImproved(startPosition, 2); // more than 5 takes too long
         printDelta(startPosition, newPosition);
         printBoard(newPosition);
 
         cout << endl;
         cout << "************************************************** Round: " << ++round << endl;
         cout << "BLACK played:" << endl;
-        startPosition = AlphaBetaOpeningBlack(newPosition, 2);
+        startPosition = MiniMaxOpeningImprovedBlack(newPosition, 2);
         printDelta(newPosition, startPosition);
         printBoard(startPosition);
     }
@@ -36,7 +38,7 @@ void playAiVsAi(string startPosition)
         cout << endl;
         cout << "************************************************** Round: " << ++round << endl;
         cout << "WHITE played:" << endl;
-        string newPosition = AlphaBetaGame(startPosition, 3); // more than 5 takes too long
+        string newPosition = MiniMaxGameImproved(startPosition, 3); // more than 5 takes too long
         printDelta(startPosition, newPosition);
         printBoard(newPosition);
         if (isWinner(newPosition))
@@ -48,7 +50,7 @@ void playAiVsAi(string startPosition)
         cout << endl;
         cout << "************************************************** Round: " << ++round << endl;
         cout << "BLACK played:" << endl;
-        startPosition = AlphaBetaGameBlack(newPosition, 2);
+        startPosition = MiniMaxGameImprovedBlack(newPosition, 2);
         printDelta(newPosition, startPosition);
         printBoard(startPosition);
         if (isWinner(invertBoard(startPosition)))

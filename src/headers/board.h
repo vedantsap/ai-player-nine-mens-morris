@@ -1,6 +1,9 @@
 #ifndef BOARD_H
 #define BOARD_H
 
+#include "prototypes.h"
+#include "constants.h"
+
 void printBoard(string board)
 {
 	replace(board.begin(), board.end(), EMPTY_POSITION, '.');
@@ -119,7 +122,8 @@ string invertBoard(string board)
 
 bool isWinner(const string &board)
 {
-	return countPieces(board, BLACK_PIECE) <= 2;
+	vector<string> blackMoves = generateMovesMidgameEndgame(invertBoard(board));
+	return blackMoves.size() == 0 || countPieces(board, BLACK_PIECE) <= 2;
 }
 
 #endif

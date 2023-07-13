@@ -30,6 +30,12 @@ int staticEstimationMidgameEndgame(const string &board);
 int staticEstimationOpeningImproved(const string &board);
 int staticEstimationMidgameEndgameImproved(const string &board);
 
+// 4.5 IMPROVED static estimation functions
+int getEmptyNeighbors(const string &board);
+int totalHalfMills(const string &board);
+int staticEstimationOpeningImproved(const string &board);
+int staticEstimationMidgameEndgameImproved(const string &board);
+
 // 5. utils and adapters for position generators
 
 bool closeMill(int position, const string &board);
@@ -58,5 +64,15 @@ string AlphaBetaGame(const string &board, int depth);
 string AlphaBetaGameBlack(const string &board, int depth);
 GameNode MaxMinGame(GameNode &move, int alpha, int beta, int depth);
 GameNode MinMaxGame(GameNode &move, int alpha, int beta, int depth);
+
+// 7. MiniMax Improved
+string MiniMaxOpeningImproved(const string &board, int depth);
+string MiniMaxOpeningImprovedBlack(const string &board, int depth);
+GameNode MaxMinImproved(GameNode &move, int depth);
+GameNode MinMaxImproved(GameNode &move, int depth);
+string MiniMaxGameImproved(const string &board, int depth);
+string MiniMaxGameImprovedBlack(const string &board, int depth);
+GameNode MaxMinGameImproved(GameNode &move, int depth);
+GameNode MinMaxGameImproved(GameNode &move, int depth);
 
 #endif
