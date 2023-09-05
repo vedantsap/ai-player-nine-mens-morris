@@ -18,7 +18,7 @@ int staticEstimationOpeningImproved(const string &board)
 	}
 
 	// 1. Reward having more pieces than BLACK
-	int staticEstimate = STATIC_ESTIMATE_MIDGAME_ENDGAME_MULTIPLIER * (countPieces(board, WHITE_PIECE) - countPieces(board, BLACK_PIECE));
+	int staticEstimate = IMPROVED_STATIC_ESTIMATE_MIDGAME_ENDGAME_MULTIPLIER * (countPieces(board, WHITE_PIECE) - countPieces(board, BLACK_PIECE));
 
 	// 2. Reward completing half mills
 	// staticEstimate += 250 * totalHalfMills(board);

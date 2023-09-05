@@ -3,6 +3,7 @@
 
 #include "constants.h"
 #include "prototypes.h"
+#include "improvedStaticEstimation.h"
 
 // Singleton global variable to keep count of positions evaluated
 static int alphaBetaPositionsEvaluated = 0;
@@ -42,7 +43,7 @@ GameNode MaxMin(GameNode &move, int alpha, int beta, int depth)
     if (depth == 0)
     {
         alphaBetaPositionsEvaluated++;
-        move.staticEstimate = staticEstimationOpening(move.board);
+        move.staticEstimate = staticEstimationOpeningImproved(move.board);
         return move;
     }
     GameNode nextMoveBestNode;
@@ -76,7 +77,7 @@ GameNode MinMax(GameNode &move, int alpha, int beta, int depth)
     if (depth == 0)
     {
         alphaBetaPositionsEvaluated++;
-        move.staticEstimate = staticEstimationOpening(move.board);
+        move.staticEstimate = staticEstimationOpeningImproved(move.board);
         return move;
     }
     GameNode nextMoveBestNode;
@@ -140,7 +141,7 @@ GameNode MaxMinGame(GameNode &move, int alpha, int beta, int depth)
     if (depth == 0)
     {
         alphaBetaPositionsEvaluated++;
-        move.staticEstimate = staticEstimationMidgameEndgame(move.board);
+        move.staticEstimate = staticEstimationMidgameEndgameImproved(move.board);
         return move;
     }
     GameNode nextMoveBestNode;
@@ -178,7 +179,7 @@ GameNode MinMaxGame(GameNode &move, int alpha, int beta, int depth)
 {
     if (depth == 0)
     {
-        move.staticEstimate = staticEstimationMidgameEndgame(move.board);
+        move.staticEstimate = staticEstimationMidgameEndgameImproved(move.board);
         alphaBetaPositionsEvaluated++;
         return move;
     }

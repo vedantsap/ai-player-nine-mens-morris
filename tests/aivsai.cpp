@@ -20,14 +20,14 @@ void playAiVsAi(string startPosition)
         cout << endl;
         cout << "************************************************** Round: " << ++round << endl;
         cout << "WHITE played:" << endl;
-        string newPosition = MiniMaxOpeningImproved(startPosition, 2); // more than 5 takes too long
+        string newPosition = AlphaBetaOpening(startPosition, 5); // more than 5 takes too long
         printDelta(startPosition, newPosition);
         printBoard(newPosition);
 
         cout << endl;
         cout << "************************************************** Round: " << ++round << endl;
         cout << "BLACK played:" << endl;
-        startPosition = MiniMaxOpeningImprovedBlack(newPosition, 2);
+        startPosition = AlphaBetaOpeningBlack(newPosition, 2);
         printDelta(newPosition, startPosition);
         printBoard(startPosition);
     }
@@ -38,7 +38,7 @@ void playAiVsAi(string startPosition)
         cout << endl;
         cout << "************************************************** Round: " << ++round << endl;
         cout << "WHITE played:" << endl;
-        string newPosition = MiniMaxGameImproved(startPosition, 3); // more than 5 takes too long
+        string newPosition = AlphaBetaGame(startPosition, 5); // more than 5 takes too long
         printDelta(startPosition, newPosition);
         printBoard(newPosition);
         if (isWinner(newPosition))
@@ -50,7 +50,7 @@ void playAiVsAi(string startPosition)
         cout << endl;
         cout << "************************************************** Round: " << ++round << endl;
         cout << "BLACK played:" << endl;
-        startPosition = MiniMaxGameImprovedBlack(newPosition, 2);
+        startPosition = AlphaBetaGameBlack(newPosition, 2);
         printDelta(newPosition, startPosition);
         printBoard(startPosition);
         if (isWinner(invertBoard(startPosition)))
